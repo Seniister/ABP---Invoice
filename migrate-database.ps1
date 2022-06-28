@@ -1,0 +1,1 @@
+dotnet run --project InvoiceApp --migrate-database
