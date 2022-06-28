@@ -21,6 +21,8 @@ namespace InvoiceApp.Pages
 
         [BindProperty]
         public InvoiceDetailModel InvoiceDModel { get; set; }
+        [BindProperty]
+        public Line Line { get; set; }
         public IActionResult OnGet()
         {
             InvoiceDModel = new InvoiceDetailModel();      
