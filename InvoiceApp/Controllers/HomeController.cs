@@ -1,13 +1,20 @@
 ﻿using InvoiceApp.Entities;
+using InvoiceApp.Pages;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using static InvoiceApp.Pages.InvoiceModel;
+using System.ComponentModel.DataAnnotations;
+using Volo.Abp.AspNetCore.Mvc.UI.Bootstrap.TagHelpers.Form;
+using Volo.Abp.Domain.Repositories;
 
 namespace InvoiceApp.Controllers
 {
     public class HomeController : Controller
     {
-        // GET: HomeController
+        private readonly IRepository<Invoice, int> InvoiceRepository;
+        public HomeController(IRepository<Invoice, int> InvoiceRepository)
+        {
+            this.InvoiceRepository = InvoiceRepository;
+        }
         public ActionResult Index()
         {
             return View();
@@ -17,6 +24,12 @@ namespace InvoiceApp.Controllers
         public ActionResult Details(int id)
         {
             return View();
+        }
+        [HttpGet]
+        public async Task<ActionResult> GetList()
+        {
+            var invoice = await InvoiceRepository.GetListAsync();
+            return Json(new { invoice});
         }
 
         // GET: HomeController/Create
@@ -33,7 +46,7 @@ namespace InvoiceApp.Controllers
             
                 return Json(new
            {
-               Values = Invoice,
+               Invoice,
            });
         }
 
@@ -81,7 +94,12 @@ namespace InvoiceApp.Controllers
     }
     
     public class Line{
+        [Required]
+        [Placeholder("Enter item name..")]
+        [Display(Name = "Name")]
         public string Name { get; set; }
+        [Placeholder("Enter item Price..")]
+        [Display(Name = "Price")]
         public int Price { get; set; }
     }
 }

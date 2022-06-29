@@ -36,7 +36,7 @@ public class InvoiceAppMenuContributor : IMenuContributor
             new ApplicationMenuItem(
                 InvoiceAppMenus.Invoice,
                 "Invoice",
-                "~/Invoice"
+                "~/Invoice/Index"
             )
         );
 
