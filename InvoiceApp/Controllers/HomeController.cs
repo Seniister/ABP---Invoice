@@ -26,6 +26,7 @@ namespace InvoiceApp.Controllers
             return View();
         }
         [HttpGet]
+        [ValidateAntiForgeryToken]
         public async Task<ActionResult> GetList()
         {
             var invoice = await InvoiceRepository.GetListAsync();
@@ -100,6 +101,6 @@ namespace InvoiceApp.Controllers
         public string Name { get; set; }
         [Placeholder("Enter item Price..")]
         [Display(Name = "Price")]
-        public int Price { get; set; }
+        public double Price { get; set; }
     }
 }

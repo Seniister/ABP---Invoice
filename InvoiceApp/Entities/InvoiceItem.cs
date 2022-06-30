@@ -6,7 +6,7 @@ namespace InvoiceApp.Entities
     {
         public virtual string Name { get; private set; }
         public virtual double Price { get; private set; }
-        public virtual int InoviceId { get; private set; }
+        public virtual int InoviceId { get;  set; }
 
         internal InvoiceItem(int inoviceId, string name, double price) 
         {

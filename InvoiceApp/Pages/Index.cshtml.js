@@ -10,69 +10,68 @@ $("#OpenModal").click(function () {
 InvoiceModal.onOpen(function () {
     console.log('opened the modal...');
 });
+/*var { request, data, settings } = abp.libs.datatables.createAjax(invoiceApp.services.invoiceServices.getListAsnyc());*/
+var request = null;
+var data;
+async function fetchData() {
+     request = await abp.ajax({
+        type: 'GET',
+        url: "api/app/invoice-services/asnyc"
+    }).then(function (result) {
+        console.log(result);
+        data = result;
+    });
+}
 
-$(function () {
-    dataTable;
-    
-})
-
-var responseCallback = function (result) {
-
-    // your custom code.
-
-    return {
-        recordsTotal: result.totalCount,
-        recordsFiltered: result.totalCount,
-        data: result.items
-    };
-};
-var dataTable = $('#InvoiceTable').DataTable(
-    abp.libs.datatables.normalizeConfiguration({
-        serverSide: true,
+$(async function () {
+    await fetchData();
+    await console.log(data);
+    $('#InvoiceTable').DataTable(abp.libs.datatables.normalizeConfiguration({
+       
         paging: true,
-        searching: true,
-        ajax: abp.libs.datatables.createAjax(invoiceApp.services.invoiceServices.getListAsnyc),
+
+        data:data,
         columnDefs: [
+            
             {
-                title: "Action",
+                title: 'Invoice No.',
+                data: "id"
+            },
+            {
+                title: "Date",
+                data: "date",
+                dataFormat: 'datetime'
+            },
+            {
+                title: 'Type',
+                data: "type"
+            },
+            {
+                title: 'Refundable',
+                data: "refundable"
+            },
+            {
+                title: 'Actions',
                 rowAction: {
                     items:
                         [
                             {
-                                text: "Edit",
+                                text: 'Edit',
                                 action: function (data) {
-                                    console.log("edit");
+                                    InvoiceModal.open({
+                                        invoiceId: data.record.id
+                                    });
+                                }
+                            },
+                            {
+                                text: 'Delete',
+                                action: function (data) {
+                                    InvoiceModal.open();
                                 }
                             }
                         ]
                 }
             },
-            {
-                title: "Date",
-                data: "date",
-                render: function (data) {
-                    return luxon
-                        .DateTime
-                        .fromISO(data, {
-                            locale: abp.localization.currentCulture.name
-                        }).toLocaleString();
-                }
-            },
-            {
-                title: "Refundable",
-                data: "refundable"
-            },
-            {
-                title: "Type",
-                data: "type"
-            },
-            {
-                title: "Invoice No.",
-                data: "id"
-            }
-            
-            
-            
         ]
-    })
-);
+    }));
+});
