@@ -26,7 +26,7 @@ namespace InvoiceApp.Pages
         public InvoiceDetailModel Invoice { get; set; }
         [BindProperty]
         public Line[] Line { get; set; }
-        public bool update = false;
+
         public async Task<IActionResult> OnGet(int? invoiceId)
         {
             if (invoiceId != null)
@@ -42,6 +42,7 @@ namespace InvoiceApp.Pages
                     {
                         Invoice = new InvoiceDetailModel
                         {
+                            Id = oldInvoice.Id,
                             Date = oldInvoice.Date,
                             Refundable = oldInvoice.Refundable,
                             Type = oldInvoice.Type,
@@ -84,19 +85,26 @@ namespace InvoiceApp.Pages
             {
                 return Page();
             }
-           
 
-            var Invoices = new Invoice(Invoice.Date, "", "", Invoice.Refundable, Invoice.Type);
-            foreach (var item in Invoice.Line)
-            {
-                Invoices.AddItem(item.Name, item.Price);
-            }
             if (Invoice.Id != null)
             {
-                await InvoiceRep.UpdateAsync(Invoices);
+                var queryable = await InvoiceRep.WithDetailsAsync(x => x.InvoiceItems);
+                var query = queryable.Where(x => x.Id == Invoice.Id);
+                var oldInvoice = query.FirstOrDefault(i => i.Id == Invoice.Id);
+                oldInvoice.Date = Invoice.Date;
+                oldInvoice.Refundable = Invoice.Refundable;
+                oldInvoice.Type = Invoice.Type;
+                var i = 0;
+                foreach (var item in Invoice.Line)
+                {
+                    oldInvoice.UpdateItem(oldInvoice.InvoiceItems[i], item.Name, item.Price);
+                    i++;
+                }
+                await InvoiceRep.UpdateAsync(oldInvoice);
                 await Db.SaveChangesAsync();
                 return RedirectToPage("/Index");
             }
+            var Invoices = new Invoice(Invoice.Date,"","",Invoice.Refundable,Invoice.Type);
             await Db.AddAsync(Invoices);
             await Db.SaveChangesAsync(); 
             return  RedirectToPage("/Index");

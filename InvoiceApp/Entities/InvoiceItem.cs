@@ -15,14 +15,18 @@ namespace InvoiceApp.Entities
             Name = name;
             Price = price;
         }
+        internal InvoiceItem(string name,double price)
+        {
+            Name = name;
+            Price = price;
+        }
         public InvoiceItem()
         {
 
         }
-
         public override object[] GetKeys()
         {
-            return new Object[] { InoviceId };
+            return new Object[] {Id, InoviceId };
         }
 
     }

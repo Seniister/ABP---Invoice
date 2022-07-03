@@ -16,7 +16,7 @@ var data;
 async function fetchData() {
      request = await abp.ajax({
         type: 'GET',
-        url: "api/app/invoice-services/asnyc"
+         url: "api/app/invoice-services/asnyc"
     }).then(function (result) {
         console.log(result);
         data = result;
@@ -26,11 +26,13 @@ async function fetchData() {
 $(async function () {
     await fetchData();
     await console.log(data);
-    $('#InvoiceTable').DataTable(abp.libs.datatables.normalizeConfiguration({
-       
+    var datatable = $('#InvoiceTable').DataTable(abp.libs.datatables.normalizeConfiguration({
+       searching: true,
         paging: true,
-
-        data:data,
+        ajax: {
+            url: "api/app/invoice-services/asnyc",
+            dataSrc: ""
+        } ,
         columnDefs: [
             
             {
@@ -61,6 +63,10 @@ $(async function () {
                                     InvoiceModal.open({
                                         invoiceId: data.record.id
                                     });
+                                    InvoiceModal.onClose(function () {
+                                        datatable.ajax.reload();
+                                    });
+                                    
                                 }
                             },
                             {
